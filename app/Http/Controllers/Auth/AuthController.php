@@ -28,8 +28,6 @@ class AuthController extends Controller
      *
      * @return void
      */
-     
-    protected $redirectTo = '/';
     
     public function __construct()
     {
@@ -37,6 +35,7 @@ class AuthController extends Controller
     }
 
     protected $redirectTo = '/';
+    protected $loginPath = '/login'; 
     
     /**
      * Get a validator for an incoming registration request.
