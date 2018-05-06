@@ -28,6 +28,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
+     
     protected $fillable = ['name', 'email', 'password'];
 
     /**
@@ -35,8 +36,10 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
+     
     protected $hidden = ['password', 'remember_token'];
-
+    
+    /** 9.で追加 */
     public function microposts()
     {
         return $this->hasMany(Micropost::class);
