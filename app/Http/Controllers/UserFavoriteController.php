@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\User;
 
-class UserFollowController extends Controller
+class UserFavoriteController extends Controller
 {
     /**
      * Store a newly created resource in storage.
@@ -15,9 +16,11 @@ class UserFollowController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+     
+     /** Favorite get */
     public function store(Request $request, $id)
     {
-        \Auth::user()->follow($id);
+        \Auth::user()->favorite($id);
         return redirect()->back();
     }
 
@@ -27,9 +30,12 @@ class UserFollowController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     
+     /**  Unfavorite */
     public function destroy($id)
     {
-        \Auth::user()->unfollow($id);
+        \Auth::user()->unfavorite($id);
         return redirect()->back();
     }
+
 }

@@ -28,7 +28,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-     
+
     protected $fillable = ['name', 'email', 'password'];
 
     /**
@@ -36,31 +36,36 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-     
+
     protected $hidden = ['password', 'remember_token'];
-    
+
     /** 9.で追加 */
     public function microposts()
     {
         return $this->hasMany(Micropost::class);
     }
-    
-    /** 12.で追加 */    
+
+    /** 12.で追加 */
     public function followings()
     {
         return $this->belongsToMany(User::class, 'user_follow', 'user_id', 'follow_id')->withTimestamps();
     }
-    
+
     public function followers()
     {
         return $this->belongsToMany(User::class, 'user_follow', 'follow_id', 'user_id')->withTimestamps();
     }
-    
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Micropost::class, 'user_favorite', 'user_id', 'micropost_id')->withTimestamps();
+    }
+
     public function follow($userId)
     {
-        // 既にフォローしているかの確認 
+        // 既にフォローしているかの確認
         $exist = $this->is_following($userId);
-        // 自分自身ではないかの確認 
+        // 自分自身ではないかの確認
         $its_me = $this->id == $userId;
 
         if ($exist || $its_me) {
@@ -76,7 +81,6 @@ class User extends Model implements AuthenticatableContract,
             $this->followings()->attach($userId);
 
             return true;
-
         }
     }
 
@@ -100,4 +104,41 @@ class User extends Model implements AuthenticatableContract,
     public function is_following($userId) {
         return $this->followings()->where('follow_id', $userId)->exists();
     }
+
+    public function favorite($micropostId)
+    {
+        // 既にお気に入りにしているかの確認
+        $exist = $this->is_favorites($micropostId);
+
+        if ($exist) {
+            // 既にお気に入りにしていれば何もしない
+            return false;
+        } else {
+            // 未だお気に入りにしていなければお気に入りにする
+            $this->favorites()->attach($micropostId);
+            return true;
+        }
+        
+    }
+
+    public function unfavorite($micropostId)
+    {
+        // 既にお気に入りにしているかの確認
+        $exist = $this->is_favorites($micropostId);
+        // ↓ 必要ない？
+        if ($exist) {
+            // 既にお気に入りにしていればお気に入りを外す
+            $this->favorites()->detach($micropostId);
+            return true;
+        } else {
+            // 未だお気に入りにしていなければ何もしない
+            return false;
+        }
+    }
+    
+    public function is_favorites($micropostId) {
+        // select * from microposts where user_id = $this->id;
+        return $this->favorites()->where('micropost_id', $micropostId)->exists();
+    }
+
 }
